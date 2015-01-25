@@ -1,0 +1,84 @@
+Xtraindata<-read.table("X_train.txt")
+Subjecttrain<-read.table("subject_train.txt")
+Ytraindata<-read.table("y_train.txt")
+Xtestdata<-read.table("X_test.txt")
+Subjecttest<-read.table("subject_test.txt")
+Ytestdata<-read.table("y_test.txt")
+ActivityLabels<-read.table("activity_labels.txt")
+
+#All of the code above loads the data files into R.
+
+Xbothdata<-rbind(Xtraindata,Xtestdata)
+#The line above combines both X data sets by rows; they are stacked on top of one another, instead of 
+#side by side.
+
+ColumnNames<-read.table("features.txt", sep = "")
+ColumnNames<-ColumnNames[,2]
+#I needed the line above because the original ColumnNames dataframe had two columns.  The first
+#was a duplicate column of just row numbers, counting from 1-561.  The second was the actual
+#variable names that I needed. So, I selected just the second column and reassigned ColumnNames
+#to be just so.
+
+ColumnNames<-as.character(ColumnNames)
+#The line above turns the ColumnNames factor into a character vector that will eventually become 
+#the preliminary column names of the dataframe Xbothdata (which is the train and test row-combined
+#data set).
+
+ColumnNames<-make.names(ColumnNames, unique = T)
+#The line of code above removes the hyphens and parenthesis in the contents of ColumnName 
+#so I can use the dplyr function select() later on in the code
+
+colnames(Xbothdata)<-ColumnNames
+
+#The line of code above makes the character vector ColumnNames the preliminary column names of
+#Xbothdata.
+
+library(dplyr)
+
+Xbothdata_ms <- select(Xbothdata, contains("mean.."), contains ("std.."))
+#This step selects only the columns with mean() or std() at the end or somewhere in the name.  
+#The make.names function removes parenthesis and underscores and replaces them with periods; 
+#that is why in the select function, I select columns that contain mean.. and std.. to account for the new periods
+
+#Although select rearranges the order of the variables, I don't think this matters as long as
+#the correct variables are there.
+
+colnames(Xbothdata_ms)<-gsub(pattern = "[.]", replacement = "", x = colnames(Xbothdata_ms))
+
+#The line of code above removes those ugly periods and replaces them with nothing (aka "").
+
+
+Subjectboth<-rbind(Subjecttrain, Subjecttest)
+colnames(Subjectboth)<-"Subject"
+
+Ybothdata<-rbind(Ytraindata, Ytestdata)
+colnames(Ybothdata)<-"Activity"
+
+ActivityLabels <- as.character(ActivityLabels[,2])
+#The line of code above represents changing the activity_labels.txt file into a vector of characters.
+
+#I did this so that in the for loop below I could replace the numbered activities in the Y data to
+#character strings.  Maybe I could have kept it as a data frame, but this seemed a little easier to
+#implement in the for loop later on.  I think it was a heindsight decision when I was trying to make
+#the for loop.
+
+
+i = 1
+for (i in 1:length(Ybothdata[,1])) {
+  Ybothdata[i,1] <- ActivityLabels[as.numeric(Ybothdata[i,1])]
+  i <- i +1
+}
+#this for loop replaces the numbers in the Activity column of the Ybothdata dataframe to be the actual 
+#names of the Activities, walking, sitting, etc..
+
+Combined<-cbind(Xbothdata_ms, Subjectboth, Ybothdata)
+#this line of code aggregates all of my renamed column wise, so they all sit side-to-side
+
+Averages<-Combined %>%
+          group_by(Subject, Activity)%>%
+          summarise_each(funs(mean))
+#This final combo of code groups uses dplyr functions to group the combined dataframe by Subject and Activity;
+#this means that when I take the mean of all the features in the next line, R will organize the means by the 
+#30 Subjects and each of the subjects Activities.  The final function takes the means of all the variables,
+#but exclude the grouped variables.  As it turns out, thats exactly what we need because the ungrouped variables
+#are all the feature variables with the measurements.
