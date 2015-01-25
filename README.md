@@ -2,6 +2,7 @@
 This the script, readme, and codebook for the Coursera course "Getting and Cleaning Data" course project
 
 This readme serves to explain the necessary conditions of my script:
+
 1) All the samsung files were in the working directory, so that they could be called just by their file name and then would be loaded into R.
 
 2) I used the dplyr package in my script.  This requires the the dplyr package is installed before the script is run. I did not inlcude a "install.packages("dplyr") line in my code, but I did include a "library(dplyr)" line; I was told it is bad etiquette to force someone to download something from the internet if they try and run a script.
