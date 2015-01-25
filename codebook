@@ -1,0 +1,114 @@
+I do not think I could adaquately describe how the original team obtained their data, or the specifications behind it.
+
+Therefore, I used the same information provided by the original data team to describe the variable names, 
+how the values were calculated, and the specifications they used.
+
+I can describe, however, how I arrived at my variables!
+
+I aggregated the data by first combining the train data and test data row-wise so the two sets of data sat "on top" of 
+one another in a single dataframe.  
+
+I then loaded the features txt file and used those features to rename the train/test dataframe variables.  
+I made the assumption that the the feature names and the train/test data were in the same order, 
+meaning that the first feature had measurements in the first column of the train/test data and so on.
+	Note:  I had to assume this because I was not part of the original experiment, and I needed this step to more forward; 
+	I think the original data team mainted the order of the variables in the features txt file and the train/test data.
+
+The next part of the assignment had me select only the features that were mean and standard deviation for each measurement. 
+I interpreted this as meaning, find and select features that had "mean()" or "std()" in their name.
+	Note: I did not include measurements of meanFreq(); I did not think that the meanFreq was the same as the mean() and std() of the measurements (I could be wrong though).
+	Note2: I renamed the variables by removing parenthesis, dashes, underscores, and made the variable names one continuous string; this made the variables easier to use in R and dplyr and easier to read, in my opinion.
+	Note3: I did not do any renaming after that.  I thought that this project could be a step in a larger goal of data tidying; I wanted to maintain as much of the original name as possible because of this.
+
+After that, I loaded the train and test Subjects (numbered 1-30) and combined them row-wise (so they sat on top of one another).  I also loaded the train and test Activities (numbered 1-6) and combined them row-wise (so they sat on top of one another)
+
+At this point, the Activites were listed as numbers; these numbers corresponded to the actual activity:
+
+1-Walking
+2-Walking_Upstairs
+3-Walking_Downstairs
+4-Sitting
+5-Standing
+6-Laying
+
+I used a for loop to rename the activities so it showed the respective activity name (instead of the number).
+
+Finally, with everything labeled correctly, I combined the features, Subjects, and Activities column wise.  Almost done!
+
+I used the package dplyr and the function group_by to group the data by Subject and then by Activity.  
+This means that I can find the mean of feature variables first by Subject then by Activity
+
+Finally, I used dplyr and the summarise_each function to find the means of each of the feature variables.  
+This means that each Subject had 6 Activites, and summarise_each found the means of all of the features associated to each 
+Subject and Activity.
+
+And that's it!
+
+Note: It's important for me to say that train files were always "stacked" ontop of the test files for the features, subjects, 
+and activities, to ensure consistency. 
+Note2: I also explained my process with notes in my actual script, if that is an easier read for you. 
+
+
+
+(below is the original teams explanation of the features)
+
+The features selected for this database come from the accelerometer and gyroscope 3-axial raw signals tAcc-XYZ and tGyro-XYZ. 
+
+These time domain signals (prefix 't' to denote time) were captured at a constant rate of 50 Hz. Then they were filtered using a median filter and a 3rd order low pass Butterworth filter with a corner frequency of 20 Hz to remove noise. 
+
+Similarly, the acceleration signal was then separated into body and gravity acceleration signals (tBodyAcc-XYZ and tGravityAcc-XYZ) using another low pass Butterworth filter with a corner frequency of 0.3 Hz. 
+
+Subsequently, the body linear acceleration and angular velocity were derived in time to obtain Jerk signals (tBodyAccJerk-XYZ and tBodyGyroJerk-XYZ). 
+
+Also the magnitude of these three-dimensional signals were calculated using the Euclidean norm (tBodyAccMag, tGravityAccMag, tBodyAccJerkMag, tBodyGyroMag, tBodyGyroJerkMag). 
+
+Finally a Fast Fourier Transform (FFT) was applied to some of these signals producing fBodyAcc-XYZ, fBodyAccJerk-XYZ, fBodyGyro-XYZ, fBodyAccJerkMag, fBodyGyroMag, fBodyGyroJerkMag. (Note the 'f' to indicate frequency domain signals). 
+
+These signals were used to estimate variables of the feature vector for each pattern:  
+'-XYZ' is used to denote 3-axial signals in the X, Y and Z directions.
+
+tBodyAcc-XYZ
+tGravityAcc-XYZ
+tBodyAccJerk-XYZ
+tBodyGyro-XYZ
+tBodyGyroJerk-XYZ
+tBodyAccMag
+tGravityAccMag
+tBodyAccJerkMag
+tBodyGyroMag
+tBodyGyroJerkMag
+fBodyAcc-XYZ
+fBodyAccJerk-XYZ
+fBodyGyro-XYZ
+fBodyAccMag
+fBodyAccJerkMag
+fBodyGyroMag
+fBodyGyroJerkMag
+
+The set of variables that were estimated from these signals are: 
+
+mean(): Mean value
+std(): Standard deviation
+mad(): Median absolute deviation 
+max(): Largest value in array
+min(): Smallest value in array
+sma(): Signal magnitude area
+energy(): Energy measure. Sum of the squares divided by the number of values. 
+iqr(): Interquartile range 
+entropy(): Signal entropy
+arCoeff(): Autorregresion coefficients with Burg order equal to 4
+correlation(): correlation coefficient between two signals
+maxInds(): index of the frequency component with largest magnitude
+meanFreq(): Weighted average of the frequency components to obtain a mean frequency
+skewness(): skewness of the frequency domain signal 
+kurtosis(): kurtosis of the frequency domain signal 
+bandsEnergy(): Energy of a frequency interval within the 64 bins of the FFT of each window.
+angle(): Angle between to vectors.
+
+Additional vectors obtained by averaging the signals in a signal window sample. These are used on the angle() variable:
+
+gravityMean
+tBodyAccMean
+tBodyAccJerkMean
+tBodyGyroMean
+tBodyGyroJerkMean
